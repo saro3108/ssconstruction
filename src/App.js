@@ -26,18 +26,18 @@ const App = () => {
     email: "selva@selvasriconstruction.co.uk ",
   };
 
-  // Editable states
+  // ✅ Editable states
   const [client, setClient] = useState({ name: "", address: "" });
   const [invoice, setInvoice] = useState({
     number: "",
     date: "",
     dueDate: "",
-    gst: 18,
+    vat: 20, 
   });
 
   const [items, setItems] = useState([{ description: "", quantity: 0, price: 0 }]);
 
-  // Handle dynamic table row changes
+  // ✅ Handle dynamic table rows
   const handleItemChange = (index, field, value) => {
     const updatedItems = [...items];
     updatedItems[index][field] =
@@ -54,12 +54,12 @@ const App = () => {
     setItems(updatedItems);
   };
 
-  // Calculate totals
+  // ✅ Totals Calculation
   const subtotal = items.reduce((acc, item) => acc + item.quantity * item.price, 0);
-  const gstAmount = (subtotal * invoice.gst) / 100;
-  const grandTotal = subtotal + gstAmount;
+  const vatAmount = (subtotal * invoice.vat) / 100;
+  const grandTotal = subtotal + vatAmount;
 
-  // Generate PDF
+  // ✅ Generate PDF
   const handleDownload = () => {
     const doc = new jsPDF("p", "mm", "a4");
 
@@ -149,9 +149,9 @@ const App = () => {
     doc.text(subtotal.toFixed(2), 180, finalY);
 
     doc.setFont("helvetica", "bold");
-    doc.text(`GST (${invoice.gst}%):`, 140, finalY + 7);
+    doc.text(`VAT (${invoice.vat}%):`, 140, finalY + 7);
     doc.setFont("helvetica", "normal");
-    doc.text(gstAmount.toFixed(2), 180, finalY + 7);
+    doc.text(vatAmount.toFixed(2), 180, finalY + 7);
 
     doc.setFont("helvetica", "bold");
     doc.text("Grand Total:", 140, finalY + 14);
@@ -228,6 +228,14 @@ const App = () => {
             onChange={(e) => setInvoice({ ...invoice, dueDate: e.target.value })}
             sx={{ ml: 2 }}
           />
+          <TextField
+            label="VAT (%)"
+            variant="standard"
+            type="number"
+            value={invoice.vat}
+            onChange={(e) => setInvoice({ ...invoice, vat: e.target.value })}
+            sx={{ ml: 2 }}
+          />
         </Box>
       </Box>
 
@@ -270,7 +278,7 @@ const App = () => {
                   onChange={(e) => handleItemChange(index, "price", e.target.value)}
                 />
               </TableCell>
-              <TableCell>₹{(item.quantity * item.price).toFixed(2)}</TableCell>
+              <TableCell>{(item.quantity * item.price).toFixed(2)}</TableCell>
               <TableCell>
                 <IconButton onClick={() => removeItem(index)} color="error">
                   <Delete />
